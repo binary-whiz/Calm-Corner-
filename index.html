@@ -21,11 +21,43 @@ html,body{
   background: transparent;
 }
 .bg{
-  position:fixed;inset:0;z-index:-1;
-  background:url('cat.jpg') center/cover no-repeat;
+  position:fixed;inset:0;z-index:-2;
+  background: url('cat.jpg') center / cover no-repeat;
   filter:blur(2px) brightness(0.9);
   transition:background-image 1.5s ease;
 }
+
+/* ambient layer sits above the background but below the main panel (background effects) */
+#ambientLayer{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+/* (no separate top ambient layer) background ambient layer (#ambientLayer) is used for leaves/candle */
+
+/* Seasonal themes */
+.theme-halloween .panel{--accent:#FF7A18}
+.theme-christmas .panel{--accent:#2ECC71}
+.theme-cat .panel{--accent:#7AC7FF}
+.theme-girl .panel{--accent:#FF9CCF}
+/* .theme-spring removed */
+
+/* day / night modifiers for background fallback gradients */
+.bg.day{background-color:linear-gradient(180deg,#ffefba,#fff3b0)}
+.bg.night{background-color:linear-gradient(180deg,#091236,#1E215D);filter:brightness(0.7)}
+
+/* Ambient animated elements */
+.ambient-leaf{position:absolute;font-size:18px;will-change:transform,opacity;opacity:1;transform:translateY(0);} 
+@keyframes floatUp{0%{transform:translateY(0) translateX(0) rotate(0);opacity:1}100%{transform:translateY(-140vh) translateX(40px) rotate(360deg);opacity:0}}
+
+.ambient-snow{position:absolute;width:8px;height:8px;background:rgba(255,255,255,0.9);border-radius:50%;will-change:transform,opacity}
+@keyframes fall{0%{transform:translateY(-10vh);opacity:0}10%{opacity:1}100%{transform:translateY(110vh);opacity:0}}
+
+.ambient-star{position:absolute;width:3px;height:3px;background:radial-gradient(circle,#fff,#ffd);border-radius:50%;opacity:0}
+@keyframes twinkle{0%,100%{opacity:0}50%{opacity:1;transform:scale(1.4)}}
+
+/* candle ambient removed */
+.theme-toggle .btn { padding-right:10px; }
+.theme-menu{ position:absolute; right:0; top:calc(100% + 6px); list-style:none; margin:0; padding:6px 0; background:rgba(255,255,255,0.92); backdrop-filter:blur(6px) saturate(120%); border:1px solid rgba(16,18,20,0.06); border-radius:10px; box-shadow:0 10px 30px rgba(10,10,12,0.18); min-width:200px; z-index:1200; }
+.theme-menu[hidden]{ display:none; }
+.theme-menu li{ padding:10px 16px; cursor:pointer; color:#111; font-size:0.98rem; }
+.theme-menu li:hover, .theme-menu li:focus{ background:rgba(0,0,0,0.04); outline:none; color:var(--accent); }
 .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px;}
 .panel{
   width:min(780px,94%);
@@ -36,9 +68,10 @@ html,body{
   box-shadow: 0 8px 30px rgba(50,50,60,0.08);
   padding:34px;
   text-align:center;
+  border-top:6px solid var(--accent);
 }
 h1{margin:0;font-size:clamp(1.6rem,3vw,2.6rem);color:#0b0c0d;}
-.subtitle{margin-top:8px;font-size:1rem;color:#2b2d30;}
+.subtitle{margin-top:8px;font-size:1rem;color:var(--accent);}
 .breath-row{margin:28px auto;display:flex;gap:20px;align-items:center;justify-content:center;flex-wrap:wrap;}
 .breath{width:150px;height:150px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;}
 .breath img{width:100%;height:100%;border-radius:50%;transition:transform 4s ease-in-out;}
@@ -85,14 +118,45 @@ input::placeholder, textarea::placeholder{color:#6b6b6b}
 <div class="controls">
   <button class="btn" id="toggleBreath">⏸ Pause</button>
   <button class="btn" id="musicBtn">🔈 Play Calm Music</button>
-  <select id="trackSelect">
-    <option value="moonlight.mp3">Moonlight</option>
-    <option value="Wildflowers.mp3">Wildflowers</option>
-    <option value="Heart-Of-The-Ocean.mp3">Heart of the Ocean</option>
-    <option value="Magical-Moments.mp3">Magical Moments</option>
-  </select>
-  <button class="btn" id="moodBtn">✨ Mood Light</button>
+  <div class="theme-toggle" style="display:inline-block;position:relative;">
+    <button id="trackToggleBtn" class="btn" aria-haspopup="true" aria-expanded="false">Music ▾</button>
+    <ul id="trackMenu" class="theme-menu" role="menu" aria-label="Music tracks" hidden>
+      <li role="menuitem" tabindex="0" data-track="moonlight.mp3">Moonlight</li>
+      <li role="menuitem" tabindex="0" data-track="Wildflowers.mp3">Wildflowers</li>
+      <li role="menuitem" tabindex="0" data-track="Heart-Of-The-Ocean.mp3">Heart of the Ocean</li>
+      <li role="menuitem" tabindex="0" data-track="Magical-Moments.mp3">Magical Moments</li>
+    </ul>
+  </div>
+  
+  <!-- Ambient Controls -->
+  <!-- Theme Toggle -->
+  <div class="theme-toggle" style="display:inline-block;position:relative;">
+    <button id="themeToggleBtn" class="btn" aria-haspopup="true" aria-expanded="false">Theme ▾</button>
+    <ul id="themeMenu" class="theme-menu" role="menu" aria-label="Theme choices" hidden>
+      <li role="menuitem" tabindex="0" data-theme="christmas">🎄 Christmas</li>
+      <li role="menuitem" tabindex="0" data-theme="halloween">🎃 Halloween</li>
+      <li role="menuitem" tabindex="0" data-theme="cat">🐱 Cat</li>
+      <li role="menuitem" tabindex="0" data-theme="girl">👧 Girl</li>
+    </ul>
+  </div>
+  <!-- Day/Night removed -->
+  <div class="theme-toggle" style="display:inline-block;position:relative;">
+    <button id="ambientToggleBtn" class="btn" aria-haspopup="true" aria-expanded="false">Ambient ▾</button>
+    <ul id="ambientMenu" class="theme-menu" role="menu" aria-label="Ambient modes" hidden>
+      <li role="menuitem" tabindex="0" data-ambient="none">Ambient: Off</li>
+      <li role="menuitem" tabindex="0" data-ambient="leaves">🍂 Leaves</li>
+      <li role="menuitem" tabindex="0" data-ambient="snow">❄️ Snow</li>
+      <li role="menuitem" tabindex="0" data-ambient="stars">✨ Stars</li>
+    <!-- Candle removed -->
+    </ul>
+  </div>
 </div>
+  <!-- Feature toggles -->
+  <div style="display:flex;gap:8px;justify-content:center;margin-top:8px;">
+    <button class="btn small" id="featGratToggle" aria-pressed="true">Gratitude: On</button>
+    <button class="btn small" id="featMoodToggle" aria-pressed="true">Mood: On</button>
+    <button class="btn small" id="featMedToggle" aria-pressed="true">Meditation: On</button>
+  </div>
 
 <!-- Feature Icons -->
 <div class="feature-row">
@@ -146,6 +210,48 @@ input::placeholder, textarea::placeholder{color:#6b6b6b}
   <input id="todoInput" placeholder="Add a task...">
   <button class="btn" id="addTodo">Add</button>
   <div id="todoList"></div>
+</div>
+
+<!-- New: Gratitude quick input -->
+<div class="panel-section" id="gratitudePanel">
+  <h3>Gratitude Journal</h3>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <input id="grat1" placeholder="1. I'm grateful for...">
+    <input id="grat2" placeholder="2. I'm grateful for...">
+    <input id="grat3" placeholder="3. I'm grateful for...">
+    <button class="btn" id="saveGrat">Save</button>
+  </div>
+  <div id="gratHistory" style="margin-top:10px;"></div>
+</div>
+
+<!-- New: Mood tracker -->
+<div class="panel-section" id="moodPanel">
+  <h3>Mood Tracker</h3>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <button class="btn moodOpt" data-emoji="😃">😃</button>
+    <button class="btn moodOpt" data-emoji="🙂">🙂</button>
+    <button class="btn moodOpt" data-emoji="😐">😐</button>
+    <button class="btn moodOpt" data-emoji="😔">😔</button>
+    <button class="btn moodOpt" data-emoji="😢">😢</button>
+  </div>
+  <div id="moodWeek" style="margin-top:10px;display:flex;gap:6px;align-items:flex-end;"></div>
+</div>
+
+<!-- New: Mini Meditation Timer -->
+<div class="panel-section" id="meditatePanel">
+  <h3>Mini Meditation</h3>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <select id="medLength">
+      <option value="300">5 minutes</option>
+      <option value="600">10 minutes</option>
+    </select>
+    <button class="btn" id="startMed">Start</button>
+    <button class="btn" id="stopMed">Stop</button>
+  </div>
+  <div id="medTimer" style="font-weight:700;margin-top:12px;">00:00</div>
+  <div id="medOverlay" style="position:relative; width:120px; height:120px; margin-top:12px;">
+  <div id="medCircle" aria-hidden="true" style="width:100%;height:100%;border-radius:50%;background-image:url('mediate.png');background-size:cover;background-position:center;box-shadow:0 6px 20px rgba(0,0,0,0.08);transition:opacity 1s linear;opacity:0.2;image-rendering:auto;filter:none;transform:translateZ(0);"></div>
+  </div>
 </div>
 
 <audio id="bgAudio" loop></audio>
@@ -256,16 +362,25 @@ function stopBreath(){
 startBreath();
 document.getElementById('toggleBreath').onclick = ()=> breathing ? stopBreath() : startBreath();
 
-// --- Calm Music ---
+// --- Calm Music (dropdown menu)
 const bgAudio=document.getElementById('bgAudio');
 const musicBtn=document.getElementById('musicBtn');
-const trackSelect=document.getElementById('trackSelect');
+const trackToggleBtn = document.getElementById('trackToggleBtn');
+const trackMenu = document.getElementById('trackMenu');
 let calmOn=false;
+// determine default/selected track (persisted in storage)
+let selectedTrack = localStorage.getItem('cc_track') || 'moonlight.mp3';
+function setSelectedTrack(src){ selectedTrack = src; localStorage.setItem('cc_track', src); if(calmOn){ bgAudio.src = src; bgAudio.play().catch(()=>{}); } }
 musicBtn.onclick=async()=>{
-  if(!calmOn){bgAudio.src=trackSelect.value;await bgAudio.play();calmOn=true;musicBtn.textContent='🔊 Music On';}
-  else{bgAudio.pause();calmOn=false;musicBtn.textContent='🔈 Play Calm Music';}
+  if(!calmOn){ bgAudio.src = selectedTrack; await bgAudio.play().catch(()=>{}); calmOn=true; musicBtn.textContent='🔊 Music On'; }
+  else{ bgAudio.pause(); calmOn=false; musicBtn.textContent='🔈 Play Calm Music'; }
 };
-trackSelect.onchange=()=>{bgAudio.src=trackSelect.value;if(calmOn)bgAudio.play();};
+// menu interaction
+if(trackToggleBtn) trackToggleBtn.onclick = ()=> trackMenu.hidden? (trackMenu.hidden=false, trackToggleBtn.setAttribute('aria-expanded','true')) : (trackMenu.hidden=true, trackToggleBtn.setAttribute('aria-expanded','false'));
+if(trackMenu) trackMenu.addEventListener('click', (e)=>{ const li = e.target.closest('li[data-track]'); if(!li) return; const t = li.getAttribute('data-track'); setSelectedTrack(t); trackMenu.hidden=true; trackToggleBtn.setAttribute('aria-expanded','false'); });
+if(trackMenu) trackMenu.addEventListener('keydown', (e)=>{ const items = Array.from(trackMenu.querySelectorAll('li')); const idx = items.indexOf(document.activeElement); if(e.key==='ArrowDown'){ e.preventDefault(); items[(idx+1)%items.length].focus(); } else if(e.key==='ArrowUp'){ e.preventDefault(); items[(idx-1+items.length)%items.length].focus(); } else if(e.key==='Enter' || e.key===' '){ e.preventDefault(); document.activeElement.click(); } else if(e.key==='Escape'){ trackMenu.hidden=true; trackToggleBtn.focus(); } });
+// initialize selected menu highlight (no visual selection, but ensure audio choice preserved)
+if(!trackMenu.hidden){ trackMenu.hidden=true; }
 
 // --- Focus Music ---
 const focusAudio=document.getElementById('focusAudio');
@@ -278,11 +393,7 @@ focusBtn.onclick=async()=>{
 };
 focusSelect.onchange=()=>{focusAudio.src=focusSelect.value;if(focusOn)focusAudio.play();};
 
-// --- Mood switch ---
-document.getElementById('moodBtn').onclick=()=>{
-  const bg=document.querySelector('.bg');
-  bg.style.backgroundImage=bg.style.backgroundImage.includes('cat.jpg')?"url('girl.jpg')":"url('cat.jpg')";
-};
+// Theme button removed; themes are applied from stored preference or theme selector
 
 // --- Journal ---
 const journalPanel=document.getElementById('journalPanel');
@@ -361,6 +472,210 @@ document.getElementById('addTodo').onclick=()=>{
   if(val!==''){todos.push(val);localStorage.setItem('todos',JSON.stringify(todos));document.getElementById('todoInput').value='';renderTodos();}
 };
 renderTodos();
+
+// --- Gratitude Journal ---
+const saveGrat=document.getElementById('saveGrat');
+const gratHistory=document.getElementById('gratHistory');
+let gratData=JSON.parse(localStorage.getItem('gratData')||'[]');
+function renderGrat(){
+  if(!gratHistory) return;
+  gratHistory.innerHTML='';
+  gratData.slice().reverse().forEach(entry=>{
+    const d=document.createElement('div'); d.style.margin='6px 0'; d.textContent=`${entry.date}: ${entry.items.join(' • ')}`; gratHistory.appendChild(d);
+  });
+}
+if(saveGrat) saveGrat.onclick=()=>{
+  const i1=document.getElementById('grat1').value.trim();
+  const i2=document.getElementById('grat2').value.trim();
+  const i3=document.getElementById('grat3').value.trim();
+  const items=[i1,i2,i3].filter(Boolean);
+  if(items.length===0) return alert('Add at least one gratitude item');
+  const entry={date:new Date().toLocaleDateString(), items};
+  gratData.push(entry); localStorage.setItem('gratData',JSON.stringify(gratData));
+  document.getElementById('grat1').value='';document.getElementById('grat2').value='';document.getElementById('grat3').value='';
+  renderGrat();
+}
+renderGrat();
+
+// --- Mood Tracker ---
+const moodBtns=document.querySelectorAll('.moodOpt');
+const moodWeek=document.getElementById('moodWeek');
+let moodData=JSON.parse(localStorage.getItem('moodData')||'{}');
+function saveMood(emoji){
+  const key=new Date().toISOString().slice(0,10); // YYYY-MM-DD
+  moodData[key]=emoji; localStorage.setItem('moodData',JSON.stringify(moodData));
+  renderMoodWeek();
+}
+function renderMoodWeek(){
+  if(!moodWeek) return;
+  moodWeek.innerHTML='';
+  for(let i=6;i>=0;i--){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    const k=d.toISOString().slice(0,10);
+    const el=document.createElement('div'); el.style.width='28px'; el.style.textAlign='center'; el.style.fontSize='18px';
+    el.style.borderTop='6px solid transparent'; el.style.paddingTop='6px';
+    const emoji=moodData[k]||'—'; el.textContent=emoji; moodWeek.appendChild(el);
+  }
+}
+moodBtns.forEach(b=>b.onclick=()=>saveMood(b.dataset.emoji));
+renderMoodWeek();
+
+// --- Mini Meditation Timer ---
+const medAudio=new Audio('Ambient music.mp3'); medAudio.loop=true; medAudio.preload='auto';
+const medTimerEl=document.getElementById('medTimer');
+const medCircle=document.getElementById('medCircle');
+let medInterval=null, medRemaining=0;
+if(document.getElementById('startMed')){
+  document.getElementById('startMed').onclick=()=>{
+    const secs=parseInt(document.getElementById('medLength').value,10);
+    if(medInterval) clearInterval(medInterval);
+    medRemaining=secs;
+    medTimerEl.textContent=new Date(medRemaining*1000).toISOString().substr(14,5);
+    medAudio.currentTime=0; medAudio.play().catch(()=>{});
+    medCircle.style.opacity='1'; medCircle.style.transition='opacity 1s linear';
+    medInterval=setInterval(()=>{
+      medRemaining--; if(medRemaining<0){ clearInterval(medInterval); medInterval=null; medAudio.pause(); medCircle.style.opacity='0.2'; medTimerEl.textContent='00:00'; return; }
+      medTimerEl.textContent=new Date(medRemaining*1000).toISOString().substr(14,5);
+      medCircle.style.opacity='0.6'; setTimeout(()=>medCircle.style.opacity='0.3',400);
+    },1000);
+  }
+  document.getElementById('stopMed').onclick=()=>{ if(medInterval) clearInterval(medInterval); medInterval=null; medAudio.pause(); medCircle.style.opacity='0.2'; medTimerEl.textContent='00:00'; }
+}
+  // Quick-open buttons removed from markup (handlers cleaned up)
+
+  // Feature toggles: persist states in localStorage
+  const featGratToggle=document.getElementById('featGratToggle');
+  const featMoodToggle=document.getElementById('featMoodToggle');
+  const featMedToggle=document.getElementById('featMedToggle');
+  function setFeat(btn, key, enabled){
+    // update aria and button label (preserve the base label before the colon)
+    btn.setAttribute('aria-pressed', enabled? 'true':'false');
+    const base = (btn.textContent||'').split(':')[0];
+    btn.textContent = `${base}: ${enabled? 'On':'Off'}`;
+    localStorage.setItem(key, enabled? '1':'0');
+    // enable/disable panels (show when enabled, hide when disabled)
+    const panelId = key==='featGrat' ? 'gratitudePanel' : key==='featMood' ? 'moodPanel' : 'meditatePanel';
+    const panel=document.getElementById(panelId);
+    if(panel) panel.style.display = enabled ? 'block' : 'none';
+    // if meditation is being turned off, stop audio and clear timer to avoid stray playback
+    if(key === 'featMed' && !enabled){
+      try{
+        if(typeof medInterval !== 'undefined' && medInterval){ clearInterval(medInterval); medInterval = null; }
+        if(typeof medAudio !== 'undefined' && medAudio){ medAudio.pause(); medAudio.currentTime = 0; }
+        if(typeof medCircle !== 'undefined' && medCircle) medCircle.style.opacity = '0.2';
+        if(typeof medTimerEl !== 'undefined' && medTimerEl) medTimerEl.textContent = '00:00';
+      }catch(e){/* ignore */}
+    }
+  }
+
+  // initialize
+  const gInit = localStorage.getItem('featGrat')!=='0';
+  const mInit = localStorage.getItem('featMood')!=='0';
+  const medInit = localStorage.getItem('featMed')!=='0';
+  if(featGratToggle) setFeat(featGratToggle,'featGrat', gInit);
+  if(featMoodToggle) setFeat(featMoodToggle,'featMood', mInit);
+  if(featMedToggle) setFeat(featMedToggle,'featMed', medInit);
+
+  if(featGratToggle) featGratToggle.onclick=()=>{ const on = featGratToggle.getAttribute('aria-pressed')!=='true'; setFeat(featGratToggle,'featGrat', on); };
+  if(featMoodToggle) featMoodToggle.onclick=()=>{ const on = featMoodToggle.getAttribute('aria-pressed')!=='true'; setFeat(featMoodToggle,'featMood', on); };
+  if(featMedToggle) featMedToggle.onclick=()=>{
+    const on = featMedToggle.getAttribute('aria-pressed')!=='true'; setFeat(featMedToggle,'featMed', on);
+    // if disabling meditation, stop audio/timer
+    if(!on){ if(medInterval) clearInterval(medInterval); medInterval=null; medAudio.pause(); medCircle.style.opacity='0.2'; medTimerEl.textContent='00:00'; }
+  };
+
+  // Ensure meditation uses Ambient music file explicitly
+  
+  // --- Ambient / Themes ---
+  // create ambient layer container
+  let ambientLayer = document.getElementById('ambientLayer');
+  if(!ambientLayer){ ambientLayer = document.createElement('div'); ambientLayer.id='ambientLayer'; document.body.appendChild(ambientLayer); }
+  // no separate ambient top layer; use ambientLayer for all ambient items
+
+  // themeSelect removed from markup
+  const dayNightBtn = document.getElementById('dayNightBtn');
+  const ambientToggleBtn = document.getElementById('ambientToggleBtn');
+  const ambientMenu = document.getElementById('ambientMenu');
+
+  function applyTheme(name){
+    // remove previous theme classes
+    document.documentElement.classList.remove('theme-halloween','theme-christmas','theme-cat','theme-girl','theme-spring');
+    // set accent via CSS variable so the UI updates immediately
+    if(name==='halloween'){
+      document.documentElement.classList.add('theme-halloween');
+      document.documentElement.style.setProperty('--accent','#FF7A18');
+    } else if(name==='christmas'){
+      document.documentElement.classList.add('theme-christmas');
+      document.documentElement.style.setProperty('--accent','#2ECC71');
+    } else if(name==='cat'){
+      document.documentElement.classList.add('theme-cat');
+      document.documentElement.style.setProperty('--accent','#7AC7FF');
+    } else if(name==='girl'){
+      document.documentElement.classList.add('theme-girl');
+      document.documentElement.style.setProperty('--accent','#FF9CCF');
+    } else {
+      document.documentElement.style.setProperty('--accent','#FF9CCF');
+    }
+    // optional background images (use placeholders available in repo)
+    const bg = document.querySelector('.bg');
+  if(name==='halloween') bg.style.backgroundImage = "url('Halloween.jpg')";
+  else if(name==='christmas') bg.style.backgroundImage = "url('Christmas.jpg')";
+  else if(name==='cat') bg.style.backgroundImage = "url('cat.jpg')";
+  else if(name==='girl') bg.style.backgroundImage = "url('girl.jpg')";
+  else bg.style.backgroundImage = "url('cat.jpg')";
+    localStorage.setItem('cc_theme', name);
+    // tiny visual flash to confirm change
+    try{ bg.style.transition = 'filter 0.35s ease'; bg.style.filter = 'brightness(1.05)'; setTimeout(()=>{ bg.style.filter='brightness(0.9)'; },120); }catch(e){}
+  }
+
+  // Day/Night toggle removed
+
+  // ambient generators
+  let ambientItems = [];
+  function clearAmbient(){ ambientItems.forEach(i=>{ try{i.remove(); }catch(e){} }); ambientItems=[]; }
+
+  function spawnLeaves(count=8){ clearAmbient(); for(let i=0;i<count;i++){ const el=document.createElement('div'); el.className='ambient-leaf'; el.textContent='🍂'; const left = Math.random()*100; const top = 100 + Math.random()*30; el.style.left = left+'%'; el.style.top = top+'vh'; el.style.fontSize = (12+Math.random()*18)+'px'; el.style.opacity = '1'; el.style.animation = `floatUp ${6+Math.random()*6}s linear ${Math.random()*2}s forwards`; el.style.animationFillMode='forwards'; ambientLayer.appendChild(el); ambientItems.push(el); } }
+
+  function spawnSnow(count=40){ clearAmbient(); for(let i=0;i<count;i++){ const el=document.createElement('div'); el.className='ambient-snow'; const left = Math.random()*100; el.style.left = left+'%'; el.style.top = (-10 - Math.random()*20)+'vh'; const size = (4+Math.random()*8); el.style.width = size+'px'; el.style.height = size+'px'; el.style.opacity = (0.6+Math.random()*0.4); el.style.animation = `fall ${4+Math.random()*6}s linear ${Math.random()*4}s forwards`; el.style.animationFillMode='forwards'; ambientLayer.appendChild(el); ambientItems.push(el); } }
+
+  function spawnStars(count=60){ clearAmbient(); for(let i=0;i<count;i++){ const el=document.createElement('div'); el.className='ambient-star'; const left = Math.random()*100; const top = Math.random()*60; el.style.left = left+'%'; el.style.top = top+'vh'; el.style.opacity='1'; el.style.animation = `twinkle ${2+Math.random()*3}s ease-in-out ${Math.random()*2}s infinite`; ambientLayer.appendChild(el); ambientItems.push(el); } }
+
+  // spawnCandle removed
+
+  function setAmbientMode(mode){
+    localStorage.setItem('cc_ambient', mode);
+    if(mode==='none'){ clearAmbient(); return; }
+    if(mode==='leaves') spawnLeaves();
+    if(mode==='snow') spawnSnow();
+  if(mode==='stars') spawnStars();
+  }
+
+  // wire controls
+  // themeSelect removed; Theme button cycles themes now
+  // dayNightBtn removed
+  if(ambientMenu) ambientMenu.addEventListener('click',(e)=>{ const li = e.target.closest('li[data-ambient]'); if(!li) return; const m = li.getAttribute('data-ambient'); setAmbientMode(m); ambientMenu.hidden=true; ambientToggleBtn.setAttribute('aria-expanded','false'); });
+  if(ambientMenu) ambientMenu.addEventListener('keydown',(e)=>{ const items = Array.from(ambientMenu.querySelectorAll('li')); const idx = items.indexOf(document.activeElement); if(e.key==='ArrowDown'){ e.preventDefault(); items[(idx+1)%items.length].focus(); } else if(e.key==='ArrowUp'){ e.preventDefault(); items[(idx-1+items.length)%items.length].focus(); } else if(e.key==='Enter' || e.key===' '){ e.preventDefault(); document.activeElement.click(); } else if(e.key==='Escape'){ ambientMenu.hidden=true; ambientToggleBtn.focus(); } });
+  if(ambientToggleBtn) ambientToggleBtn.onclick = ()=> ambientMenu.hidden? (ambientMenu.hidden=false, ambientToggleBtn.setAttribute('aria-expanded','true')) : (ambientMenu.hidden=true, ambientToggleBtn.setAttribute('aria-expanded','false'));
+
+  // Theme toggle menu wiring
+  const themeToggleBtn = document.getElementById('themeToggleBtn');
+  const themeMenu = document.getElementById('themeMenu');
+  function openThemeMenu(){ themeMenu.hidden=false; themeToggleBtn.setAttribute('aria-expanded','true'); setTimeout(()=> themeMenu.querySelector('li')?.focus(),60); }
+  function closeThemeMenu(){ themeMenu.hidden=true; themeToggleBtn.setAttribute('aria-expanded','false'); }
+  if(themeToggleBtn) themeToggleBtn.onclick = (e)=>{ if(themeMenu.hidden) openThemeMenu(); else closeThemeMenu(); };
+  if(themeMenu) themeMenu.addEventListener('click', (e)=>{ const li = e.target.closest('li[data-theme]'); if(!li) return; const t = li.getAttribute('data-theme'); applyTheme(t); closeThemeMenu(); });
+  if(themeMenu) themeMenu.addEventListener('keydown', (e)=>{ const items = Array.from(themeMenu.querySelectorAll('li')); const idx = items.indexOf(document.activeElement); if(e.key==='ArrowDown'){ e.preventDefault(); items[(idx+1)%items.length].focus(); } else if(e.key==='ArrowUp'){ e.preventDefault(); items[(idx-1+items.length)%items.length].focus(); } else if(e.key==='Enter' || e.key===' '){ e.preventDefault(); document.activeElement.click(); } else if(e.key==='Escape'){ closeThemeMenu(); themeToggleBtn.focus(); } });
+  document.addEventListener('click', (ev)=>{
+    if(!ev.target.closest('.theme-toggle')) closeThemeMenu();
+    if(!ev.target.closest('.theme-toggle')){ if(trackMenu) trackMenu.hidden=true; if(ambientMenu) ambientMenu.hidden=true; if(trackToggleBtn) trackToggleBtn.setAttribute('aria-expanded','false'); if(ambientToggleBtn) ambientToggleBtn.setAttribute('aria-expanded','false'); }
+  });
+
+  // initialize from storage
+  const savedTheme = localStorage.getItem('cc_theme')||'default'; applyTheme(savedTheme);
+  // day/night initialization removed
+  const savedAmbient = localStorage.getItem('cc_ambient')||'none'; if(ambientMenu){ ambientMenu.hidden=true; } setAmbientMode(savedAmbient);
+  const savedTrack = localStorage.getItem('cc_track')||'moonlight.mp3'; selectedTrack = savedTrack;
+  if(medAudio && medAudio.src.indexOf('Ambient music.mp3')===-1){ medAudio.src='Ambient music.mp3'; }
 </script>
 </body>
 </html>
