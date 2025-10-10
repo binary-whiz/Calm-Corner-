@@ -24,6 +24,7 @@ h1{margin:0; font-size:clamp(1.6rem,3vw,2.6rem); letter-spacing:-0.02em; color:#
 .breath{width:150px;height:150px;border-radius:50%;display:flex;align-items:center;justify-content:center;transform:scale(1);animation:breatheScale 10s ease-in-out infinite;}
 @keyframes breatheScale{0%{transform:scale(1);opacity:0.9;}40%{transform:scale(1.25);opacity:1;}60%{transform:scale(1.15);}100%{transform:scale(1);opacity:0.9;}}
 #breathText{font-weight:600;color:#3c3c46;margin-top:6px;}
+#breathSeconds{font-weight:500;color:#7a7a83;margin-top:2px;}
 .controls{margin-top:18px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
 .btn{background:white; border-radius:12px; padding:10px 14px; box-shadow:0 6px 18px rgba(70,70,90,0.06); border:none; cursor:pointer; font-weight:600; display:inline-flex; gap:8px; align-items:center; transition: transform .12s ease, box-shadow .12s ease;}
 .btn:active{transform:translateY(1px);}
@@ -49,13 +50,14 @@ input, textarea{width:100%;padding:8px;margin:6px 0;border-radius:6px;border:1px
 <h1 id="title">🌿 Take a deep breath</h1>
 <div class="subtitle">A tiny calm corner to slow down — follow the circle and breathe with it.</div>
 
-<!-- Breathing circle with inhale/exhale images -->
+<!-- Breathing circle with inhale/hold/exhale images -->
 <div class="breath-row" aria-hidden="false">
   <div class="breath" id="breathCircle">
-  <img id="breathImg" src="inhale.png" alt="Breathing visual" style="width:100%; height:100%; border-radius:50%;">
+    <img id="breathImg" src="inhale.png" alt="Breathing visual" style="width:100%; height:100%; border-radius:50%;">
   </div>
   <div>
     <div id="breathText" aria-live="polite">Breathe in</div>
+    <div id="breathSeconds">(4s)</div>
     <div style="font-size:.9rem; margin-top:6px; color:#7a7a83;">(Follow the circle)</div>
   </div>
 </div>
@@ -122,22 +124,50 @@ input, textarea{width:100%;padding:8px;margin:6px 0;border-radius:6px;border:1px
 
 <script>
 // --- Breathing ---
-const inhale = 4, hold = 2, exhale = 4, cycle = (inhale+hold+exhale)*1000;
+const inhaleTime = 4, holdTime = 2, exhaleTime = 4;
 const breathText = document.getElementById('breathText');
-const breathCircle = document.getElementById('breathCircle');
+const breathSeconds = document.getElementById('breathSeconds');
 const breathImg = document.getElementById('breathImg');
+const breathCircle = document.getElementById('breathCircle');
 const toggleBreathBtn = document.getElementById('toggleBreath');
+
 let breathing = true, breathTimer;
 
-function updatePhaseText(){
-  breathText.textContent = "Breathe in"; 
-  breathImg.src = "inhale.png";
-  setTimeout(()=> breathText.textContent="Hold", inhale*1000);
-  setTimeout(()=> { breathText.textContent="Breathe out"; breathImg.src="exhale.png"; }, (inhale+hold)*1000);
+function startBreathingLoop(){
+  let phase = "inhale";
+  let timeLeft = inhaleTime;
+
+  breathCircle.style.animationPlayState = 'running';
+  toggleBreathBtn.textContent = '⏸ Pause';
+  breathing = true;
+
+  breathTimer = setInterval(()=>{
+    // Update image and text based on phase
+    if(phase === "inhale") { breathImg.src = "inhale.png"; breathText.textContent="Breathe in"; }
+    else if(phase === "hold") { breathImg.src = "hold.png"; breathText.textContent="Hold"; }
+    else { breathImg.src = "exhale.png"; breathText.textContent="Breathe out"; }
+
+    breathSeconds.textContent = `(${timeLeft}s)`;
+
+    timeLeft--;
+
+    if(timeLeft < 0){
+      if(phase === "inhale"){ phase="hold"; timeLeft = holdTime; }
+      else if(phase==="hold"){ phase="exhale"; timeLeft=exhaleTime; }
+      else { phase="inhale"; timeLeft=inhaleTime; }
+    }
+  },1000);
 }
 
-function startBreathingLoop(){updatePhaseText(); breathTimer=setInterval(updatePhaseText, cycle); toggleBreathBtn.textContent='⏸ Pause'; breathing=true; breathCircle.style.animationPlayState='running';}
-function stopBreathingLoop(){clearInterval(breathTimer); toggleBreathBtn.textContent='▶ Resume'; breathing=false; breathCircle.style.animationPlayState='paused'; breathText.textContent='Paused';}
+function stopBreathingLoop(){
+  clearInterval(breathTimer);
+  toggleBreathBtn.textContent='▶ Resume';
+  breathing=false;
+  breathCircle.style.animationPlayState='paused';
+  breathText.textContent='Paused';
+  breathSeconds.textContent='';
+}
+
 startBreathingLoop();
 toggleBreathBtn.addEventListener('click',()=>breathing?stopBreathingLoop():startBreathingLoop());
 
@@ -165,7 +195,7 @@ moodBtn.addEventListener('click',()=>{
 const journalBtn=document.getElementById('journalBtn'), selfcareBtn=document.getElementById('selfcareBtn'), pomodoroBtn=document.getElementById('pomodoroBtn'), todoFeatureBtn=document.getElementById('todoFeatureBtn');
 const journalPanel=document.getElementById('journalPanel'), selfcarePanel=document.getElementById('selfcarePanel'), pomodoroPanel=document.getElementById('pomodoroPanel'), todoPanel=document.getElementById('todoPanel');
 
-[journalBtn, selfcareBtn, pomodoroBtn, todoFeatureBtn].forEach(btn=>{
+[journalBtn,selfcareBtn,pomodoroBtn,todoFeatureBtn].forEach(btn=>{
   btn.addEventListener('click',()=>{
     journalPanel.style.display='none'; selfcarePanel.style.display='none'; pomodoroPanel.style.display='none'; todoPanel.style.display='none';
   });
