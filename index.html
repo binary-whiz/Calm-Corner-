@@ -58,7 +58,178 @@ html,body{
 .theme-menu[hidden]{ display:none; }
 .theme-menu li{ padding:10px 16px; cursor:pointer; color:#111; font-size:0.98rem; }
 .theme-menu li:hover, .theme-menu li:focus{ background:rgba(0,0,0,0.04); outline:none; color:var(--accent); }
-.wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px;}
+.wrap{
+  min-height:100vh;display:flex;gap:0;padding:0;
+  position:relative;
+}
+
+/* Sidebar Navigation */
+.sidebar{
+  position:fixed;left:0;top:0;height:100vh;width:220px;
+  background:rgba(245,230,211,0.12);backdrop-filter:blur(12px) saturate(120%);
+  border-right:1px solid rgba(212,166,121,0.2);
+  padding:20px 12px;overflow-y:auto;z-index:1000;
+  transition:width 0.4s ease;
+  display:flex;flex-direction:column;gap:16px;
+}
+
+.sidebar.collapsed{
+  width:70px;
+}
+
+.sidebar-header{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 8px;
+}
+
+.sidebar-title{
+  font-size:1rem;font-weight:700;color:#FFFFFF;text-shadow:0 1px 2px rgba(90,62,43,0.2);
+  margin:0;white-space:nowrap;
+}
+
+.sidebar-toggle{
+  width:32px;height:32px;border:2px solid rgba(212,166,121,0.3);background:rgba(212,166,121,0.1);
+  border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:#FFFFFF;font-size:1rem;transition:all 0.3s ease;flex-shrink:0;
+}
+
+.sidebar-toggle:hover{
+  border-color:rgba(212,166,121,0.5);background:rgba(212,166,121,0.15);
+}
+
+.sidebar.collapsed .sidebar-title{
+  display:none;
+}
+
+/* Section Groups */
+.nav-section{
+  display:flex;flex-direction:column;gap:8px;
+}
+
+.nav-section-title{
+  font-size:0.75rem;font-weight:600;color:#F5E6D3;text-transform:uppercase;
+  letter-spacing:0.8px;opacity:0.7;padding:8px 12px 2px;margin:0;
+  border-top:1px solid rgba(212,166,121,0.1);padding-top:12px;
+}
+
+.sidebar.collapsed .nav-section-title{
+  display:none;
+}
+
+.nav-items{
+  display:flex;flex-direction:column;gap:6px;
+}
+
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;
+  border:2px solid rgba(212,166,121,0.2);background:rgba(212,166,121,0.08);
+  color:#FFFFFF;font-weight:600;font-size:0.9rem;transition:all 0.3s ease;
+  text-decoration:none;position:relative;
+}
+
+.nav-item:hover{
+  border-color:rgba(212,166,121,0.4);background:rgba(212,166,121,0.12);
+  transform:translateX(2px);
+}
+
+.nav-item.active{
+  border-color:#D2A679;background:linear-gradient(135deg,#8B5E3C,#A67C52);
+  box-shadow:0 6px 20px rgba(212,166,121,0.25),inset 0 0 16px rgba(245,230,211,0.15);
+  text-shadow:0 1px 2px rgba(90,62,43,0.2);
+}
+
+.nav-icon{
+  font-size:1.3rem;min-width:28px;text-align:center;flex-shrink:0;
+}
+
+.nav-label{
+  font-size:0.9rem;white-space:nowrap;flex:1;
+}
+
+.sidebar.collapsed .nav-label{
+  display:none;
+}
+
+/* Tooltip on Collapsed */
+.sidebar.collapsed .nav-item::after{
+  content:attr(data-tooltip);
+  position:absolute;left:100%;top:50%;transform:translateY(-50%);
+  margin-left:12px;padding:6px 12px;background:rgba(90,62,43,0.95);
+  color:#FFFFFF;border-radius:6px;font-size:0.8rem;white-space:nowrap;
+  pointer-events:none;opacity:0;transition:opacity 0.3s ease;
+  border:1px solid rgba(212,166,121,0.3);z-index:2000;
+}
+
+.sidebar.collapsed .nav-item:hover::after{
+  opacity:1;
+}
+
+/* Main Content Area */
+.main-content{
+  flex:1;margin-left:220px;display:flex;align-items:center;justify-content:center;padding:32px;
+  transition:margin-left 0.4s ease;
+}
+
+.main-content.sidebar-collapsed{
+  margin-left:70px;
+}
+
+/* Mobile Responsive */
+@media(max-width:768px){
+  .sidebar{
+    width:100%;height:auto;flex-direction:row;
+    position:fixed;bottom:0;left:0;right:0;
+    border-right:none;border-top:1px solid rgba(212,166,121,0.2);
+    border-radius:0;
+    padding:8px 4px;z-index:1001;
+    overflow-y:visible;overflow-x:auto;
+  }
+  
+  .sidebar.collapsed{
+    width:100%;
+  }
+  
+  .sidebar-header{
+    display:none;
+  }
+  
+  .nav-section{
+    flex-direction:row;gap:2px;flex-shrink:0;
+  }
+  
+  .nav-section-title{
+    display:none;
+  }
+  
+  .nav-items{
+    flex-direction:row;gap:2px;
+  }
+  
+  .nav-item{
+    flex-direction:column;width:60px;padding:6px;font-size:0.75rem;
+    border-radius:8px;flex-shrink:0;
+    justify-content:center;
+  }
+  
+  .nav-icon{
+    font-size:1.2rem;min-width:auto;margin-bottom:2px;
+  }
+  
+  .nav-label{
+    font-size:0.65rem;max-width:55px;text-align:center;
+  }
+  
+  .nav-item::after{
+    display:none;
+  }
+  
+  .main-content{
+    margin-left:0;padding-bottom:70px;margin-top:0;padding-top:20px;
+  }
+  
+  .main-content.sidebar-collapsed{
+    margin-left:0;
+  }
+}
 .panel{
   width:min(780px,94%);
   border-radius:20px;
@@ -75,7 +246,11 @@ h1{margin:0;font-size:clamp(1.6rem,3vw,2.6rem);color:#0b0c0d;}
 .breath-row{margin:28px auto;display:flex;gap:20px;align-items:center;justify-content:center;flex-wrap:wrap;}
 .breath{width:150px;height:150px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;}
 .breath img{width:100%;height:100%;border-radius:50%;transition:transform 4s ease-in-out;}
-.controls{margin-top:18px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.controls{
+  margin-top:18px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
+  padding:12px;background:rgba(212,166,121,0.08);border-radius:10px;
+  border:1px solid rgba(212,166,121,0.15);
+}
 .btn{
   background:rgba(212,166,121,0.1);border-radius:12px;padding:10px 14px;
   box-shadow:0 2px 8px rgba(90,62,43,0.04);
@@ -95,7 +270,7 @@ h1{margin:0;font-size:clamp(1.6rem,3vw,2.6rem);color:#0b0c0d;}
   box-shadow:0 8px 24px rgba(212,166,121,0.25),inset 0 0 20px rgba(245,230,211,0.2);
   text-shadow:0 1px 3px rgba(90,62,43,0.2);
 }
-.feature-row{display:flex;justify-content:center;gap:18px;margin-top:25px;flex-wrap:wrap;}
+.feature-row{display:none;justify-content:center;gap:18px;margin-top:25px;flex-wrap:wrap;}
 .feature{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;font-size:.85rem;color:#FFFFFF;font-weight:600;}
 .feature img{width:50px;height:50px;border-radius:50%;margin-bottom:5px;}
 .feature:hover{transform:scale(1.1);}
@@ -120,8 +295,8 @@ input::placeholder, textarea::placeholder{color:#A67C52;opacity:0.7;}
 /* Daily Quote/Affirmations */
 #quoteSection{
   margin-top:20px;margin-bottom:20px;padding:16px;
-  background:rgba(255,255,255,0.6);border-radius:12px;
-  border-left:4px solid var(--accent);min-height:60px;
+  background:rgba(212,166,121,0.08);backdrop-filter:blur(12px);border:1px solid rgba(212,166,121,0.2);border-radius:12px;
+  min-height:60px;
   display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;
 }
 #dailyQuote{
@@ -250,12 +425,105 @@ input::placeholder, textarea::placeholder{color:#A67C52;opacity:0.7;}
 </head>
 <body>
 <div class="bg"></div>
+
+<!-- Sidebar Navigation -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h2 class="sidebar-title">🌿 Calm</h2>
+    <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+  </div>
+  
+  <!-- CALM Section -->
+  <div class="nav-section">
+    <h3 class="nav-section-title">Calm</h3>
+    <div class="nav-items">
+      <a class="nav-item active" id="navBreathing" data-page="breathing" data-tooltip="Breathing">
+        <span class="nav-icon">🌿</span>
+        <span class="nav-label">Breathing</span>
+      </a>
+      <a class="nav-item" id="navMeditation" data-page="meditation" data-tooltip="Meditation">
+        <span class="nav-icon">🧘</span>
+        <span class="nav-label">Meditation</span>
+      </a>
+    </div>
+  </div>
+  
+  <!-- REFLECT Section -->
+  <div class="nav-section">
+    <h3 class="nav-section-title">Reflect</h3>
+    <div class="nav-items">
+      <a class="nav-item" id="navJournal" data-page="journal" data-tooltip="Journal">
+        <span class="nav-icon">📔</span>
+        <span class="nav-label">Journal</span>
+      </a>
+      <a class="nav-item" id="navMood" data-page="mood" data-tooltip="Mood">
+        <span class="nav-icon">💭</span>
+        <span class="nav-label">Mood</span>
+      </a>
+      <a class="nav-item" id="navGratitude" data-page="gratitude" data-tooltip="Gratitude">
+        <span class="nav-icon">🙏</span>
+        <span class="nav-label">Gratitude</span>
+      </a>
+    </div>
+  </div>
+  
+  <!-- FOCUS Section -->
+  <div class="nav-section">
+    <h3 class="nav-section-title">Focus</h3>
+    <div class="nav-items">
+      <a class="nav-item" id="navPomodoro" data-page="pomodoro" data-tooltip="Pomodoro">
+        <span class="nav-icon">⏱️</span>
+        <span class="nav-label">Pomodoro</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
 <main class="wrap">
+  <div class="main-content" id="mainContent">
 <section class="panel">
 <h1>🌿 Take a deep breath</h1>
 <div class="subtitle">Follow the rhythm — relax your body and mind.</div>
 
-<!-- Daily Quote/Affirmations -->
+<!-- Calm Music - Always at top -->
+<div class="controls">
+  <button class="btn" id="toggleBreath" style="display:none;">⏸ Pause</button>
+  <button class="btn" id="musicBtn">🔈 Play Calm Music</button>
+  <div class="theme-toggle" style="display:inline-block;position:relative;">
+    <button id="trackToggleBtn" class="btn" aria-haspopup="true" aria-expanded="false">Music ▾</button>
+    <ul id="trackMenu" class="theme-menu" role="menu" aria-label="Music tracks" hidden>
+      <li role="menuitem" tabindex="0" data-track="moonlight.mp3">Moonlight</li>
+      <li role="menuitem" tabindex="0" data-track="Wildflowers.mp3">Wildflowers</li>
+      <li role="menuitem" tabindex="0" data-track="Heart-Of-The-Ocean.mp3">Heart of the Ocean</li>
+      <li role="menuitem" tabindex="0" data-track="Magical-Moments.mp3">Magical Moments</li>
+    </ul>
+  </div>
+  
+  <!-- Ambient Controls -->
+  <!-- Theme Toggle -->
+  <div class="theme-toggle" style="display:inline-block;position:relative;">
+    <button id="themeToggleBtn" class="btn" aria-haspopup="true" aria-expanded="false">Theme ▾</button>
+    <ul id="themeMenu" class="theme-menu" role="menu" aria-label="Theme choices" hidden>
+      <li role="menuitem" tabindex="0" data-theme="christmas">🎄 Christmas</li>
+      <li role="menuitem" tabindex="0" data-theme="halloween">🎃 Halloween</li>
+      <li role="menuitem" tabindex="0" data-theme="cat">🐱 Cat</li>
+      <li role="menuitem" tabindex="0" data-theme="girl">👧 Girl</li>
+    </ul>
+  </div>
+  <!-- Day/Night removed -->
+  <div class="theme-toggle" style="display:inline-block;position:relative;">
+    <button id="ambientToggleBtn" class="btn" aria-haspopup="true" aria-expanded="false">Ambient ▾</button>
+    <ul id="ambientMenu" class="theme-menu" role="menu" aria-label="Ambient modes" hidden>
+      <li role="menuitem" tabindex="0" data-ambient="none">Ambient: Off</li>
+      <li role="menuitem" tabindex="0" data-ambient="leaves">🍂 Leaves</li>
+      <li role="menuitem" tabindex="0" data-ambient="snow">❄️ Snow</li>
+      <li role="menuitem" tabindex="0" data-ambient="stars">✨ Stars</li>
+    <!-- Candle removed -->
+    </ul>
+  </div>
+</div>
+
+<!-- Daily Quote/Affirmations - Always at top -->
 <div id="quoteSection">
   <div id="dailyQuote">Loading your daily affirmation...</div>
   <div id="quoteAuthor"></div>
@@ -311,43 +579,6 @@ input::placeholder, textarea::placeholder{color:#A67C52;opacity:0.7;}
   </div>
 </div>
 
-<!-- Calm Music -->
-<div class="controls">
-  <button class="btn" id="toggleBreath" style="display:none;">⏸ Pause</button>
-  <button class="btn" id="musicBtn">🔈 Play Calm Music</button>
-  <div class="theme-toggle" style="display:inline-block;position:relative;">
-    <button id="trackToggleBtn" class="btn" aria-haspopup="true" aria-expanded="false">Music ▾</button>
-    <ul id="trackMenu" class="theme-menu" role="menu" aria-label="Music tracks" hidden>
-      <li role="menuitem" tabindex="0" data-track="moonlight.mp3">Moonlight</li>
-      <li role="menuitem" tabindex="0" data-track="Wildflowers.mp3">Wildflowers</li>
-      <li role="menuitem" tabindex="0" data-track="Heart-Of-The-Ocean.mp3">Heart of the Ocean</li>
-      <li role="menuitem" tabindex="0" data-track="Magical-Moments.mp3">Magical Moments</li>
-    </ul>
-  </div>
-  
-  <!-- Ambient Controls -->
-  <!-- Theme Toggle -->
-  <div class="theme-toggle" style="display:inline-block;position:relative;">
-    <button id="themeToggleBtn" class="btn" aria-haspopup="true" aria-expanded="false">Theme ▾</button>
-    <ul id="themeMenu" class="theme-menu" role="menu" aria-label="Theme choices" hidden>
-      <li role="menuitem" tabindex="0" data-theme="christmas">🎄 Christmas</li>
-      <li role="menuitem" tabindex="0" data-theme="halloween">🎃 Halloween</li>
-      <li role="menuitem" tabindex="0" data-theme="cat">🐱 Cat</li>
-      <li role="menuitem" tabindex="0" data-theme="girl">👧 Girl</li>
-    </ul>
-  </div>
-  <!-- Day/Night removed -->
-  <div class="theme-toggle" style="display:inline-block;position:relative;">
-    <button id="ambientToggleBtn" class="btn" aria-haspopup="true" aria-expanded="false">Ambient ▾</button>
-    <ul id="ambientMenu" class="theme-menu" role="menu" aria-label="Ambient modes" hidden>
-      <li role="menuitem" tabindex="0" data-ambient="none">Ambient: Off</li>
-      <li role="menuitem" tabindex="0" data-ambient="leaves">🍂 Leaves</li>
-      <li role="menuitem" tabindex="0" data-ambient="snow">❄️ Snow</li>
-      <li role="menuitem" tabindex="0" data-ambient="stars">✨ Stars</li>
-    <!-- Candle removed -->
-    </ul>
-  </div>
-</div>
   <!-- Feature toggles -->
   <div style="display:flex;gap:8px;justify-content:center;margin-top:8px;">
     <button class="btn small" id="featGratToggle" aria-pressed="true">Gratitude: On</button>
@@ -454,8 +685,9 @@ input::placeholder, textarea::placeholder{color:#A67C52;opacity:0.7;}
 <audio id="bgAudio" loop></audio>
 <audio id="focusAudio" loop></audio>
 
-<div class="meta">✨ You can open multiple panels & play both musics together!</div>
+<div class="meta">🎵 Music plays while you explore any feature. Choose your soundtrack!</div>
 </section>
+  </div><!-- Close main-content -->
 </main>
 
 <script>
@@ -701,6 +933,104 @@ sessionDurationSelect.onchange = ()=>{
 };
 
 timeRemainingEl.textContent = formatTime(sessionDuration);
+
+// --- Sidebar Navigation ---
+const sidebar = document.getElementById('sidebar');
+const sidebarToggle = document.getElementById('sidebarToggle');
+const navItems = document.querySelectorAll('.nav-item');
+let sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+
+function updateSidebarState(){
+  if(sidebarCollapsed){
+    sidebar.classList.add('collapsed');
+    document.getElementById('mainContent').classList.add('sidebar-collapsed');
+  } else {
+    sidebar.classList.remove('collapsed');
+    document.getElementById('mainContent').classList.remove('sidebar-collapsed');
+  }
+  localStorage.setItem('sidebarCollapsed', sidebarCollapsed);
+}
+
+sidebarToggle.addEventListener('click', ()=>{
+  sidebarCollapsed = !sidebarCollapsed;
+  updateSidebarState();
+});
+
+navItems.forEach(item=>{
+  item.addEventListener('click', (e)=>{
+    e.preventDefault();
+    const page = item.getAttribute('data-page');
+    
+    // Remove active class from all
+    navItems.forEach(i => i.classList.remove('active'));
+    // Add active to clicked
+    item.classList.add('active');
+    // Store preference
+    localStorage.setItem('activeNav', page);
+    
+    // Show/hide feature panels (keep breathing always visible except on specific pages)
+    handlePageSwitch(page);
+  });
+});
+
+function handlePageSwitch(page){
+  // Hide all panels
+  document.getElementById('journalPanel').style.display = 'none';
+  document.getElementById('selfcarePanel').style.display = 'none';
+  document.getElementById('pomodoroPanel').style.display = 'none';
+  document.getElementById('todoPanel').style.display = 'none';
+  document.getElementById('gratitudePanel').style.display = 'none';
+  document.getElementById('moodPanel').style.display = 'none';
+  document.getElementById('meditatePanel').style.display = 'none';
+  document.querySelector('.breathing-container').style.display = 'none';
+  
+  // ALWAYS keep quotes and controls visible (global features)
+  document.getElementById('quoteSection').style.display = 'flex';
+  document.querySelector('.controls').style.display = 'flex';
+  
+  // Show based on page
+  switch(page){
+    case 'breathing':
+      document.querySelector('.breathing-container').style.display = 'block';
+      break;
+    case 'journal':
+      document.getElementById('journalPanel').style.display = 'block';
+      break;
+    case 'mood':
+      document.getElementById('moodPanel').style.display = 'block';
+      break;
+    case 'gratitude':
+      document.getElementById('gratitudePanel').style.display = 'block';
+      break;
+    case 'meditation':
+      document.getElementById('meditatePanel').style.display = 'block';
+      break;
+    case 'pomodoro':
+      document.getElementById('pomodoroPanel').style.display = 'block';
+      break;
+  }
+}
+
+// Initialize sidebar state
+updateSidebarState();
+
+// Initialize: Hide all panels on load
+document.getElementById('journalPanel').style.display = 'none';
+document.getElementById('selfcarePanel').style.display = 'none';
+document.getElementById('pomodoroPanel').style.display = 'none';
+document.getElementById('todoPanel').style.display = 'none';
+document.getElementById('gratitudePanel').style.display = 'none';
+document.getElementById('moodPanel').style.display = 'none';
+document.getElementById('meditatePanel').style.display = 'none';
+
+// Restore active nav if saved
+const savedNav = localStorage.getItem('activeNav') || 'breathing';
+const savedNavElement = document.getElementById('nav' + savedNav.charAt(0).toUpperCase() + savedNav.slice(1));
+if(savedNavElement){
+  navItems.forEach(i => i.classList.remove('active'));
+  savedNavElement.classList.add('active');
+  handlePageSwitch(savedNav);
+}
 
 // --- Calm Music (dropdown menu)
 const bgAudio=document.getElementById('bgAudio');
