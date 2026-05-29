@@ -251,6 +251,7 @@ h1{margin:0;font-size:clamp(1.6rem,3vw,2.6rem);color:#0b0c0d;}
   padding:12px;background:rgba(212,166,121,0.08);border-radius:10px;
   border:1px solid rgba(212,166,121,0.15);
 }
+.controls #musicBtn{margin-right:10px;}
 .btn{
   background:rgba(212,166,121,0.1);border-radius:12px;padding:10px 14px;
   box-shadow:0 2px 8px rgba(90,62,43,0.04);
@@ -312,7 +313,7 @@ input::placeholder, textarea::placeholder{color:#A67C52;opacity:0.7;}
 
 /* Breathing Presets */
 .breathing-container{
-  margin-top:25px;padding:20px;
+  margin-top:25px;padding:20px;padding-bottom:40px;
   background:rgba(245,230,211,0.12);
   backdrop-filter:blur(8px) saturate(120%);
   border:1px solid rgba(212,166,121,0.2);
@@ -360,8 +361,16 @@ input::placeholder, textarea::placeholder{color:#A67C52;opacity:0.7;}
   0%,100%{box-shadow:0 0 30px rgba(212,166,121,0.2),inset 0 0 20px rgba(245,230,211,0.15);}
   50%{box-shadow:0 0 50px rgba(212,166,121,0.35),inset 0 0 30px rgba(245,230,211,0.25);}
 }
+@keyframes breatheIn{
+  from { transform: scale(1); }
+  to { transform: scale(1.25); }
+}
+@keyframes breatheOut{
+  from { transform: scale(1.25); }
+  to { transform: scale(1); }
+}
 .breath img{
-  width:100%;height:100%;border-radius:50%;transition:transform 4s ease-in-out;
+  width:100%;height:100%;border-radius:50%;
 }
 .breathing-text{
   font-size:1.2rem;font-weight:700;color:#FFFFFF;text-align:center;margin-bottom:8px;
@@ -492,10 +501,10 @@ input::placeholder, textarea::placeholder{color:#A67C52;opacity:0.7;}
   <div class="theme-toggle" style="display:inline-block;position:relative;">
     <button id="trackToggleBtn" class="btn" aria-haspopup="true" aria-expanded="false">Music ▾</button>
     <ul id="trackMenu" class="theme-menu" role="menu" aria-label="Music tracks" hidden>
-      <li role="menuitem" tabindex="0" data-track="moonlight.mp3">Moonlight</li>
-      <li role="menuitem" tabindex="0" data-track="Wildflowers.mp3">Wildflowers</li>
-      <li role="menuitem" tabindex="0" data-track="Heart-Of-The-Ocean.mp3">Heart of the Ocean</li>
-      <li role="menuitem" tabindex="0" data-track="Magical-Moments.mp3">Magical Moments</li>
+      <li role="menuitem" tabindex="0" data-track="moonlight.mp3">Moonlight 🌙</li>
+      <li role="menuitem" tabindex="0" data-track="Wildflowers.mp3">Wildflowers 🌸</li>
+      <li role="menuitem" tabindex="0" data-track="Heart-Of-The-Ocean.mp3">Heart of the Ocean 🌊</li>
+      <li role="menuitem" tabindex="0" data-track="Magical-Moments.mp3">Magical Moments ✨</li>
     </ul>
   </div>
   
@@ -504,10 +513,10 @@ input::placeholder, textarea::placeholder{color:#A67C52;opacity:0.7;}
   <div class="theme-toggle" style="display:inline-block;position:relative;">
     <button id="themeToggleBtn" class="btn" aria-haspopup="true" aria-expanded="false">Theme ▾</button>
     <ul id="themeMenu" class="theme-menu" role="menu" aria-label="Theme choices" hidden>
-      <li role="menuitem" tabindex="0" data-theme="christmas">🎄 Christmas</li>
-      <li role="menuitem" tabindex="0" data-theme="halloween">🎃 Halloween</li>
-      <li role="menuitem" tabindex="0" data-theme="cat">🐱 Cat</li>
-      <li role="menuitem" tabindex="0" data-theme="girl">👧 Girl</li>
+      <li role="menuitem" tabindex="0" data-theme="christmas">Christmas 🎄</li>
+      <li role="menuitem" tabindex="0" data-theme="halloween">Halloween 🎃</li>
+      <li role="menuitem" tabindex="0" data-theme="cat">Cozy Companion 🐾</li>
+      <li role="menuitem" tabindex="0" data-theme="girl">Solace ☕</li>
     </ul>
   </div>
   <!-- Day/Night removed -->
@@ -532,13 +541,8 @@ input::placeholder, textarea::placeholder{color:#A67C52;opacity:0.7;}
 
 <!-- Breathing Presets -->
 <div class="breathing-container">
-  <h3 style="margin-top:0;text-align:center;color:#FFFFFF;font-weight:600;text-shadow:0 1px 3px rgba(90,62,43,0.3);">Choose Your Breathing Technique</h3>
+  <h3 style="margin-top:0;text-align:center;color:#FFFFFF;font-weight:600;text-shadow:0 1px 3px rgba(90,62,43,0.3);">Find Your Rhythm 🐻</h3>
   
-  <div class="preset-selector">
-    <button class="preset-btn active" data-preset="box">📦 Box<div class="preset-info">4-4-4-4</div></button>
-    <button class="preset-btn" data-preset="478">🌊 4-7-8<div class="preset-info">4-7-8</div></button>
-    <button class="preset-btn" data-preset="tactical">⚡ Tactical<div class="preset-info">4-4-4-4</div></button>
-  </div>
   
   <div class="breathing-circle" id="breathingCircle">
     <div class="breath"><img id="breathingImg" src="inhale.png" alt="breath"></div>
@@ -569,22 +573,15 @@ input::placeholder, textarea::placeholder{color:#A67C52;opacity:0.7;}
   
   <div class="session-stats">
     <div class="stat-item">
-      <div style="color:#888;font-size:0.85rem;">Time Remaining</div>
+      <div style="color:rgba(255,255,255,0.6);font-size:0.85rem;">Time Remaining</div>
       <div class="stat-value" id="timeRemaining">5:00</div>
     </div>
     <div class="stat-item">
-      <div style="color:#888;font-size:0.85rem;">Cycles</div>
+      <div style="color:rgba(255,255,255,0.6);font-size:0.85rem;">Cycles</div>
       <div class="stat-value" id="cycleCount">0</div>
     </div>
   </div>
 </div>
-
-  <!-- Feature toggles -->
-  <div style="display:flex;gap:8px;justify-content:center;margin-top:8px;">
-    <button class="btn small" id="featGratToggle" aria-pressed="true">Gratitude: On</button>
-    <button class="btn small" id="featMoodToggle" aria-pressed="true">Mood: On</button>
-    <button class="btn small" id="featMedToggle" aria-pressed="true">Meditation: On</button>
-  </div>
 
 <!-- Feature Icons -->
 <div class="feature-row">
@@ -685,7 +682,6 @@ input::placeholder, textarea::placeholder{color:#A67C52;opacity:0.7;}
 <audio id="bgAudio" loop></audio>
 <audio id="focusAudio" loop></audio>
 
-<div class="meta">🎵 Music plays while you explore any feature. Choose your soundtrack!</div>
 </section>
   </div><!-- Close main-content -->
 </main>
@@ -725,10 +721,11 @@ let sessionActive = false;
 let sessionPaused = false;
 let sessionRemaining = sessionDuration;
 let cycleCount = 0;
-let breathingTimer = null;
 let sessionTimer = null;
 let phaseTimer = null;
 let phaseRemaining = 0;
+let currentPhaseIndex = 0;
+let currentPhasePattern = [];
 
 const breathingCircle = document.getElementById('breathingCircle');
 const breathingPhase = document.getElementById('breathingPhase');
@@ -750,77 +747,88 @@ function formatTime(seconds){
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
+function buildPhasePattern(preset){
+  const pattern = [
+    { name: 'Inhale', duration: preset.inhale },
+    { name: 'Hold', duration: preset.hold1 },
+    { name: 'Exhale', duration: preset.exhale }
+  ];
+  if(preset.hold2 > 0){
+    pattern.push({ name: 'Hold', duration: preset.hold2 });
+  }
+  return pattern;
+}
+
 function setPhase(phaseName, durationSec){
   breathingPhase.textContent = phaseName;
   phaseRemaining = durationSec;
-  updatePhaseTimer();
-  
+  breathingCountdown.textContent = `${phaseRemaining}s`;
+  updatePhaseAnimation(phaseName, durationSec);
+  startPhaseInterval();
+}
+
+function updatePhaseAnimation(phaseName, durationSec){
   const breathingImg = document.getElementById('breathingImg');
-  
-  if(phaseName.includes('Inhale')){
-    if(breathingImg){
-      breathingImg.style.transition = 'transform 4s ease-in-out';
-      breathingImg.style.transform = 'scale(1.25)';
-    }
-    if(breathingImg) breathingImg.src = 'inhale.png';
+  if(!breathingImg) return;
+
+  breathingImg.style.animationPlayState = 'running';
+
+  if(phaseName === 'Inhale'){
+    breathingImg.src = 'inhale.png';
+    breathingImg.style.animation = `breatheIn ${durationSec}s linear forwards`;
   }
-  else if(phaseName.includes('Hold')){
-    if(breathingImg){
-      breathingImg.style.transition = 'none';
-      breathingImg.style.transform = 'scale(1.25)';
-    }
-    if(breathingImg) breathingImg.src = 'hold.png';
+  else if(phaseName === 'Hold'){
+    breathingImg.style.animation = 'none';
+    breathingImg.style.transform = 'scale(1.25)';
+    breathingImg.src = 'hold.png';
   }
-  else if(phaseName.includes('Exhale')){
-    if(breathingImg){
-      breathingImg.style.transition = 'transform 4s ease-in-out';
-      breathingImg.style.transform = 'scale(1)';
-    }
-    if(breathingImg) breathingImg.src = 'exhale.png';
+  else if(phaseName === 'Exhale'){
+    breathingImg.src = 'exhale.png';
+    breathingImg.style.animation = `breatheOut ${durationSec}s linear forwards`;
   }
 }
 
-function updatePhaseTimer(){
-  if(phaseTimer) clearInterval(phaseTimer);
+function startPhaseInterval(){
+  if(phaseTimer) {
+    clearInterval(phaseTimer);
+    phaseTimer = null;
+  }
   phaseTimer = setInterval(()=>{
+    if(!sessionActive || sessionPaused){
+      clearInterval(phaseTimer);
+      phaseTimer = null;
+      return;
+    }
+
     phaseRemaining--;
     breathingCountdown.textContent = `${phaseRemaining}s`;
-    if(phaseRemaining <= 0) clearInterval(phaseTimer);
+
+    if(phaseRemaining <= 0){
+      clearInterval(phaseTimer);
+      currentPhaseIndex++;
+      if(currentPhaseIndex >= currentPhasePattern.length){
+        currentPhaseIndex = 0;
+        cycleCount++;
+        cycleCountEl.textContent = cycleCount;
+      }
+      const nextPhase = currentPhasePattern[currentPhaseIndex];
+      setPhase(nextPhase.name, nextPhase.duration);
+    }
   }, 1000);
 }
 
 function runBreathingCycle(){
-  const preset = presets[currentPreset];
-  const cycleDuration = (preset.inhale + preset.hold1 + preset.exhale + preset.hold2) * 1000;
-  
-  setPhase('Inhale', preset.inhale);
-  
-  setTimeout(()=>{
-    setPhase('Hold', preset.hold1);
-  }, preset.inhale * 1000);
-  
-  setTimeout(()=>{
-    setPhase('Exhale', preset.exhale);
-  }, (preset.inhale + preset.hold1) * 1000);
-  
-  if(preset.hold2 > 0){
-    setTimeout(()=>{
-      setPhase('Hold', preset.hold2);
-    }, (preset.inhale + preset.hold1 + preset.exhale) * 1000);
-  }
-  
-  if(sessionActive && !sessionPaused){
-    breathingTimer = setTimeout(()=>{
-      if(sessionActive && !sessionPaused){
-        cycleCount++;
-        cycleCountEl.textContent = cycleCount;
-        runBreathingCycle();
-      }
-    }, cycleDuration);
-  }
+  currentPhasePattern = buildPhasePattern(presets[currentPreset]);
+  currentPhaseIndex = 0;
+  const phase = currentPhasePattern[currentPhaseIndex];
+  setPhase(phase.name, phase.duration);
 }
 
 function updateSessionTimer(){
+  if(sessionTimer){
+    clearInterval(sessionTimer);
+    sessionTimer = null;
+  }
   sessionTimer = setInterval(()=>{
     if(sessionActive && !sessionPaused){
       sessionRemaining--;
@@ -849,35 +857,54 @@ function startSession(){
   sessionDurationSelect.disabled = true;
   presetBtns.forEach(b => b.disabled = true);
   
-  setTimeout(()=>{
-    runBreathingCycle();
-    updateSessionTimer();
-  }, 1000);
+  runBreathingCycle();
+  updateSessionTimer();
 }
 
 function pauseSession(){
   sessionPaused = true;
   pauseBreathBtn.style.display = 'none';
   resumeBreathBtn.style.display = 'inline-block';
-  if(phaseTimer) clearInterval(phaseTimer);
-  if(breathingTimer) clearTimeout(breathingTimer);
+  if(phaseTimer){
+    clearInterval(phaseTimer);
+    phaseTimer = null;
+  }
+  if(sessionTimer){
+    clearInterval(sessionTimer);
+    sessionTimer = null;
+  }
+  const breathingImg = document.getElementById('breathingImg');
+  if(breathingImg){
+    breathingImg.style.animationPlayState = 'paused';
+  }
 }
 
 function resumeSession(){
+  if(!sessionActive) return;
   sessionPaused = false;
   resumeBreathBtn.style.display = 'none';
   pauseBreathBtn.style.display = 'inline-block';
-  runBreathingCycle();
+  const breathingImg = document.getElementById('breathingImg');
+  if(breathingImg){
+    breathingImg.style.animationPlayState = 'running';
+  }
+  if(!phaseTimer){
+    startPhaseInterval();
+  }
+  if(!sessionTimer){
+    updateSessionTimer();
+  }
 }
 
 function resetSession(){
   sessionActive = false;
   sessionPaused = false;
   cycleCount = 0;
+  currentPhaseIndex = 0;
+  currentPhasePattern = [];
   sessionRemaining = sessionDuration;
   
   if(phaseTimer) clearInterval(phaseTimer);
-  if(breathingTimer) clearTimeout(breathingTimer);
   if(sessionTimer) clearInterval(sessionTimer);
   
   breathingPhase.textContent = 'Get Ready';
@@ -899,7 +926,6 @@ function resetSession(){
 function endSession(){
   sessionActive = false;
   if(phaseTimer) clearInterval(phaseTimer);
-  if(breathingTimer) clearTimeout(breathingTimer);
   if(sessionTimer) clearInterval(sessionTimer);
   
   breathingPhase.textContent = '✅ Session Complete';
@@ -1083,18 +1109,6 @@ document.getElementById('saveEntry').onclick=()=>{
 };
 document.getElementById('clearJournal').onclick=()=>{journalData=[];localStorage.setItem('journalData','[]');renderJournal();}
 renderJournal();
-
-// --- Self-care ---
-const tips=['Drink water 💧','Stretch 🧘‍♀️','Walk for 2 mins 🚶‍♀️','Deep breath ✨','Smile 😊'];
-let tipIndex=0;
-document.getElementById('nextTip').onclick=()=>{
-  tipIndex=(tipIndex+1)%tips.length;
-  document.getElementById('selfcareTip').textContent=tips[tipIndex];
-};
-document.getElementById('selfcareBtn').onclick=()=>{
-  const el=document.getElementById('selfcarePanel');
-  el.style.display=el.style.display==='block'?'none':'block';
-};
 
 // --- Pomodoro ---
 const pomTimer=document.getElementById('pomodoroTimer');
@@ -1389,6 +1403,7 @@ if(document.getElementById('startMed')){
   const savedAmbient = localStorage.getItem('cc_ambient')||'none'; if(ambientMenu){ ambientMenu.hidden=true; } setAmbientMode(savedAmbient);
   const savedTrack = localStorage.getItem('cc_track')||'moonlight.mp3'; selectedTrack = savedTrack;
   if(medAudio && medAudio.src.indexOf('Ambient music.mp3')===-1){ medAudio.src='Ambient music.mp3'; }
+  
 </script>
 </body>
 </html>
